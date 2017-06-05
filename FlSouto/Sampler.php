@@ -25,8 +25,8 @@ class Sampler{
 
 	}
 
-	function clone(){
-		return new Sampler($this);
+	function __invoke(){
+		return new self($this);
 	}
 
 	function mod($filters){
@@ -36,8 +36,8 @@ class Sampler{
 		return $this;
 	}
 
-	function cut($from, $to){
-		return $this->mod("trim $from $to");
+	function cut($offset, $length){
+		return $this->mod("trim $offset $length fade 0 $length 0");
 	}
 
 	function add($input){
@@ -62,6 +62,17 @@ class Sampler{
 
 	function save($as){
 		copy($this->file, $as);
+	}
+
+	function x($times){
+		if($times<2){
+			return $this;
+		}
+		return $this->mod('repeat '.($times-1));
+	}
+
+	function play(){
+		shell_exec("play {$this->file}");
 	}
 
 	function __destruct(){
