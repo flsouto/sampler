@@ -10,20 +10,33 @@ class Sampler{
 
 	function __construct($input){
 
-		if($input instanceof self){
+        $id = self::$sequence++;
+
+        if($input instanceof self){
 			$input = $input->file;
 		}
 
-		$ext = explode('.',$input);
-		$ext = end($ext);
+		if(mb_substr($input, 0, 7)=='silence'){
+            
+            $len = mb_substr($input, 7);
+            
+            $this->file = __DIR__.'/tmp_dir/silence'.$id.'.wav';
+		    shell_exec("sox -n -r 44100 -c 2 $this->file trim 0 $len");
+		    
+        } else {
+		    
+            $ext = explode('.',$input);
+            $ext = end($ext);
+            $this->file = __DIR__.'/tmp_dir/smp'.$id.'.'.$ext;
+            copy($input, $this->file);
+        }
 
-		$id = self::$sequence++;
-
-		$this->file = __DIR__.'/tmp_dir/smp'.$id.'.'.$ext;
-
-		copy($input, $this->file);
 
 	}
+
+	static function silence($length){
+	    return new self("silence $length");
+    }
 
 	function __invoke(){
 		return new self($this);
