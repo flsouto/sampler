@@ -16,9 +16,9 @@ class Sampler{
 			$input = $input->file;
 		}
 
-		if(mb_substr($input, 0, 7)=='silence'){
+		if(substr($input, 0, 7)=='silence'){
             
-            $len = mb_substr($input, 7);
+            $len = substr($input, 7);
             
             $this->file = __DIR__.'/tmp_dir/silence'.$id.'.wav';
 		    shell_exec("sox -n -r 44100 -c 2 $this->file trim 0 $len");
@@ -63,12 +63,16 @@ class Sampler{
 		return $this;
 	}
 	
-	function mix($input){
+	function mix($input, $normalize=true){
 		if($input instanceof self){
 			$input = $input->file;
 		}
 		$out = __DIR__.'/tmp_dir/mod.wav';
-		shell_exec("sox -m {$this->file} $input $out");
+		if(!$normalize){
+			shell_exec("sox -m -v 1 {$this->file} -v 1 $input $out");			
+		} else {
+			shell_exec("sox -m {$this->file} $input $out");
+		}
 		copy($out, $this->file);
 		return $this;
 	}
