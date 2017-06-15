@@ -42,6 +42,18 @@ class Sampler{
 		return new self($this);
 	}
 
+	function len(){
+		$len = `soxi -d {$this->file}`;
+		$parts = explode(":",$len);
+		$len = 0;
+		if(!empty($parts[1])){
+			$len = intval($parts[1]) * 60;
+		}
+		$len += ltrim($parts[2],'0');
+		return $len;
+
+	}
+
 	function mod($filters){
 		$out = __DIR__.'/tmp_dir/mod.wav';
 		shell_exec("sox {$this->file} $out $filters");
