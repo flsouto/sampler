@@ -89,6 +89,10 @@ class Sampler{
 		return $this;
 	}
 
+	function unsilence(){
+		return $this->mod("silence -l 1 0.1 1% -1 2.0 1%");
+	}
+
 	function save($as){
 		copy($this->file, $as);
 	}
