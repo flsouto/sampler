@@ -8,7 +8,7 @@ class Sampler{
 
 	protected static $sequence = 0;
 
-	function __construct($input){
+	function __construct($input, $reference=false){
 
         $id = self::$sequence++;
 
@@ -24,11 +24,15 @@ class Sampler{
 		    shell_exec("sox -n -r 44100 -c 2 $this->file trim 0 $len");
 		    
         } else {
-		    
-            $ext = explode('.',$input);
-            $ext = end($ext);
-            $this->file = __DIR__.'/tmp_dir/smp'.$id.'.'.$ext;
-            copy($input, $this->file);
+
+		    if($reference){
+		        $this->file = $input;
+            } else {
+                $ext = explode('.',$input);
+                $ext = end($ext);
+                $this->file = __DIR__.'/tmp_dir/smp'.$id.'.'.$ext;
+                copy($input, $this->file);
+            }
         }
 
 
@@ -89,9 +93,41 @@ class Sampler{
 		return $this;
 	}
 
-	function unsilence(){
-		return $this->mod("silence -l 1 0.1 1% -1 2.0 1%");
+	function unsilence($treshold='2.0'){
+		return $this->mod("silence -l 1 0.1 1% -1 $treshold 1%");
 	}
+	
+	function chop($num_slices){
+	    $repeat = $num_slices - 1;
+	    $trim = $this->len() / $num_slices;
+	    return $this->mod("trim 0 $trim repeat $repeat");
+    }
+    
+    function fade($from_val, $to_val, $attr='gain'){
+        
+        $steps = range($from_val, $to_val);
+        $smp_size = $this->len() / count($steps);
+
+        /** @var self $stream */
+        $stream = null;
+
+        foreach($steps as $i => $value){
+
+            $offset = $i * $smp_size;
+            $out = __DIR__.'/tmp_dir/fade.wav';
+            shell_exec("sox $this->file $out trim $offset $smp_size $attr $value");
+            if(is_null($stream)){
+                $stream = new self($out);
+            } else {
+                $stream->add($out);
+            }
+
+        }
+
+        $this->file = $stream->file;
+        return $this;
+        
+    }
 
 	function save($as){
 		copy($this->file, $as);
