@@ -2,6 +2,10 @@
 
 namespace FlSouto;
 
+if(!is_dir(__DIR__.'/tmp_dir/')){
+    mkdir(__DIR__.'/tmp_dir/');
+}
+
 class Sampler{
 
 	protected $file;
@@ -124,7 +128,8 @@ class Sampler{
 
         }
 
-        $this->file = $stream->file;
+        shell_exec("mv {$stream->file} {$this->file}");
+
         return $this;
         
     }
