@@ -73,6 +73,13 @@ class Sampler{
 		return $this->mod("trim $offset $length fade 0 $length 0");
 	}
 
+	function copy($offset, $length){
+	    $id = self::$sequence++;
+	    $out = __DIR__."/tmp_dir/cpy{$id}.wav";
+	    shell_exec("sox {$this->file} $out trim $offset $length");
+	    return new self($out, true);
+    }
+
 	function add($input){
 		if($input instanceof self){
 			$input = $input->file;
@@ -134,8 +141,45 @@ class Sampler{
         
     }
 
+    function each($smp_size, $callback){
+        $offset = 0;
+        $len = $this->len();
+        /** @var self $stream */
+        $stream = null;
+        while($offset < $len){
+            if($offset+$smp_size > $len){
+                $smp_size = $len - $offset;
+            }
+            $smp = $this->copy($offset, $smp_size);
+            $return = $callback($smp);
+            if($return instanceof self){
+                $smp = $return;
+            }
+            if(!$stream){
+                $stream = $smp;
+            } else {
+                $stream->add($smp);
+            }
+            $offset += $smp_size;
+        }
+        shell_exec("mv {$stream->file} {$this->file}");
+        return $this;
+    }
+    
+    function split($num_pieces){
+        $offset = 0;
+        $smp_size = $this->len()/$num_pieces;
+        $parts = [];
+        for($i=1;$i<=$num_pieces;$i++){
+            $parts[] = $this->copy($offset, $smp_size);
+            $offset += $smp_size;
+        }
+        return $parts;
+    }
+    
 	function save($as){
 		copy($this->file, $as);
+		return $this;
 	}
 
 	function x($times){
