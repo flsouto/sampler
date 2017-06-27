@@ -145,6 +145,10 @@ class Sampler{
 		return $this->mod('repeat '.($times-1));
 	}
 
+	function resize($newlen){
+	    return $this->mod('speed '.($this->len()/$newlen));
+    }
+
 	function play(){
 		shell_exec("play {$this->file}");
 	}
