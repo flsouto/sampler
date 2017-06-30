@@ -9,6 +9,7 @@ if(!is_dir(__DIR__.'/tmp_dir/')){
 class Sampler{
 
 	protected $file;
+	protected $auto_gc = true;
 
 	protected static $sequence = 0;
 
@@ -180,6 +181,7 @@ class Sampler{
     function part($offset, $length){
         require_once(__DIR__.'/SamplerPart.php');
         $copy = $this->copy($offset,$length);
+        $copy->auto_gc = false;
         $ref = new SamplerPart($copy->file, true);
         $ref->parent = $this;
         $ref->offset = $offset;
@@ -208,7 +210,7 @@ class Sampler{
 	}
 
 	function __destruct(){
-		if(file_exists($this->file)){
+		if($this->auto_gc && file_exists($this->file)){
 			unlink($this->file);
 		}
 	}
