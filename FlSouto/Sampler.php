@@ -206,6 +206,46 @@ class Sampler{
 	function resize($newlen){
 	    return $this->mod('speed '.($this->len()/$newlen));
     }
+    
+    function to120(){
+
+        $len = $this->len();
+
+        $targets[] = 1;
+        $value = 1;
+
+        while($value <= $len){
+            $value *= 2;
+            $targets[] = $value;
+        }
+
+        if(in_array($len,$targets)){
+            return $this;
+        }
+
+        $closest = null;
+        $lastdiff = 999;
+
+        foreach($targets as $time){
+            $diff = abs($time-$len);
+            if($diff < $lastdiff){
+                $lastdiff = $diff;
+                $closest = $time;
+            }
+            if($diff == $lastdiff && rand(0,1)){
+                $closest = $time;
+            }
+        }
+
+        $this->resize($closest);
+
+        return $this;
+    }
+    
+    function pick($len){
+        $offset = rand(0, (($this->len() / $len) - 1)) * $len;
+        return $this->copy($offset,$len);
+    }
 
 	function play(){
 		shell_exec("play {$this->file}");
