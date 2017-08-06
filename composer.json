@@ -1,0 +1,13 @@
+{
+    "name": "flsouto/sampler",
+    "description": "SoX wrapper for easy sound manipulation",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Fabio Souto",
+            "email": "fabiolimasouto@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
