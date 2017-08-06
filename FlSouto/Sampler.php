@@ -58,7 +58,9 @@ class Sampler{
 		if(!empty($parts[1])){
 			$len = intval($parts[1]) * 60;
 		}
-		$len += ltrim($parts[2],'0');
+		if(isset($parts[2])){
+			$len += ltrim($parts[2],'0');
+		}
 		return $len;
 
 	}
