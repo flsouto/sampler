@@ -65,6 +65,13 @@ class Sampler{
 
 	}
 
+    function stereo(){
+        $out = __DIR__.'/tmp_dir/stereo.wav';
+        shell_exec("sox -M -c 1 {$this->file} -c 1 {$this->file} $out");
+        copy($out, $this->file);
+        return $this;
+    }
+
 	function mod($filters){
 		$out = __DIR__.'/tmp_dir/mod.wav';
 		shell_exec("sox {$this->file} $out $filters");
@@ -108,7 +115,7 @@ class Sampler{
 	}
 
 	function unsilence($treshold='2.0'){
-		return $this->mod("silence -l 1 0.1 1% -1 $treshold 1%");
+		return $this->mod("silence -l 1 0.1 5% -1 $treshold 0%");
 	}
 	
 	function chop($num_slices){
@@ -253,7 +260,7 @@ class Sampler{
 
 	function __destruct(){
 		if($this->auto_gc && file_exists($this->file)){
-			unlink($this->file);
+			//unlink($this->file);
 		}
 	}
 
