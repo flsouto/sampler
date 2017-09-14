@@ -47,6 +47,13 @@ class Sampler{
 	    return new self("silence $length");
     }
 
+    static function select($path){
+        $files = glob($path);
+        shuffle($files);
+        $path = current($files);
+        return new self($path);
+    }
+
 	function __invoke(){
 		return new self($this);
 	}
@@ -249,9 +256,14 @@ class Sampler{
         return $this;
     }
     
-    function pick($len){
+    function pick($len, $apply2self=false){
         $offset = rand(0, (($this->len() / $len) - 1)) * $len;
-        return $this->copy($offset,$len);
+        $copy = $this->copy($offset,$len);
+        if(!$apply2self){
+            return $copy;
+        }
+        copy($copy->file, $this->file);
+        return $this;
     }
 
 	function play(){
