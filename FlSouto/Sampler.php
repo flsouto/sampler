@@ -47,11 +47,15 @@ class Sampler{
 	    return new self("silence $length");
     }
 
-    static function select($path){
+    static function select($path, $reference=false){
+        if(is_array($path)){
+            shuffle($path);
+            $path = current($path);
+        }
         $files = glob($path);
         shuffle($files);
         $path = current($files);
-        return new self($path);
+        return new self($path, $reference);
     }
 
 	function __invoke(){
