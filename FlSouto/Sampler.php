@@ -76,6 +76,45 @@ class Sampler{
 
 	}
 
+
+    function getpos($expr){
+
+        $expr = "$expr";
+        $invert = false;
+
+        if(strstr($expr,'-')){
+            $invert = true;
+            $expr = str_replace('-','',$expr);
+        }
+
+        if(strstr($expr,'/')){
+            $parts = explode('/',$expr);
+            $pos = $this->len() * $parts[0] / $parts[1];
+        } else {
+            $pos = (int)$expr;
+        }
+
+        return $invert ? $this->len()-$pos : $pos;
+
+    }
+
+    function range($from ,$to=null){
+
+        $range = [];
+
+        $range[0] = $this->getpos($from);
+        if(!$to){
+            $to = $this->len()-$range[0];
+        } else {
+            $to = $this->getpos($to);
+        }
+
+        $range[1] = $to;
+
+        return $range;
+
+    }
+
     function stereo(){
         $out = __DIR__.'/tmp_dir/stereo.wav';
         shell_exec("sox -M -c 1 {$this->file} -c 1 {$this->file} $out");
@@ -90,13 +129,17 @@ class Sampler{
 		return $this;
 	}
 
-	function cut($offset, $length){
-		return $this->mod("trim $offset $length fade 0 $length 0");
+	function cut($offset, $length=null){
+
+	    list($offset,$length) = $this->range($offset,$length);
+
+		return $this->mod("trim $offset $length");
 	}
 
-	function copy($offset, $length){
+	function copy($offset, $length=null){
 	    $id = self::$sequence++;
 	    $out = __DIR__."/tmp_dir/cpy{$id}.wav";
+        list($offset,$length) = $this->range($offset,$length);
 	    shell_exec("sox {$this->file} $out trim $offset $length");
 	    return new self($out, true);
     }
@@ -198,8 +241,11 @@ class Sampler{
         return $parts;
     }
     
-    function part($offset, $length){
+    function part($offset, $length=null){
         require_once(__DIR__.'/SamplerPart.php');
+
+        list($offset, $length) = $this->range($offset,$length);
+
         $copy = $this->copy($offset,$length);
         $copy->auto_gc = false;
         $ref = new SamplerPart($copy->file, true);
