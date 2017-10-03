@@ -12,7 +12,11 @@ class SamplerPart extends Sampler{
     protected $length;
 
     function rebuild(){
-        $part1 = $this->parent->copy(0, $this->offset);
+        if($this->offset){
+            $part1 = $this->parent->copy(0, $this->offset);
+        } else {
+            $part1 = Sampler::silence(0);
+        }
         $part1->add($this->cut(0,$this->len()));
         $parent_len = $this->parent->len();
         $offset2 = $this->offset + $this->length;
