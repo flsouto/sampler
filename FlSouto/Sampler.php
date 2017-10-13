@@ -91,7 +91,7 @@ class Sampler{
             $parts = explode('/',$expr);
             $pos = $this->len() * $parts[0] / $parts[1];
         } else {
-            $pos = (int)$expr;
+            $pos = $expr;
         }
 
         return $invert ? $this->len()-$pos : $pos;
