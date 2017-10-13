@@ -204,6 +204,37 @@ class Sampler{
         return $this;
         
     }
+    
+    function sway(array $values, $steps=null){
+        if($steps){
+            $tmp = [];
+            $steps++;
+            while(true){
+                foreach($values as $v){
+                    $tmp[] = $v;
+                    if(count($tmp)==$steps){
+                        break 2;
+                    }
+                }
+            }
+            $values = $tmp;
+        }
+        $stream = null;
+        foreach($this->split(count($values)-1) as $i => $part){
+            $x = $values[$i];
+            $y = $values[$i+1];
+            $part->fade($x, $y);
+            if($stream){
+                $stream->add($part);
+            } else {
+                $stream = $part;
+            }
+        }
+
+        shell_exec("mv {$stream->file} {$this->file}");
+        return $this;
+
+    }
 
     function each($smp_size, $callback){
         $offset = 0;
