@@ -290,7 +290,11 @@ class Sampler{
     }
     
 	function save($as){
-		copy($this->file, $as);
+        if(substr($as,-4)=='.wav'){
+            copy($this->file, $as);
+        } else {
+            shell_exec("sox $this->file $as");
+        }
 		return $this;
 	}
 
