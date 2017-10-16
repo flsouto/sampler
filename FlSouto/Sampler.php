@@ -66,8 +66,11 @@ class Sampler{
 		$len = `soxi -d {$this->file}`;
 		$parts = explode(":",$len);
 		$len = 0;
-		if(!empty($parts[1])){
-			$len = intval($parts[1]) * 60;
+		if(!empty($parts[0])){
+            $len = intval($parts[0]) * 3600;
+        }
+        if(!empty($parts[1])){
+			$len += intval($parts[1]) * 60;
 		}
 		if(isset($parts[2])){
 			$len += ltrim($parts[2],'0');
