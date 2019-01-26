@@ -344,6 +344,15 @@ class Sampler{
         return $this;
     }
     
+    function tempo(){
+        return 120 * (16/$this->len());
+    }
+    
+    function toTempo($bpm){
+        $this->resize((16 * 120) / $bpm);
+        return $this;
+    }
+    
     function pick($len, $apply2self=false){
         $offset = rand(0, (($this->len() / $len) - 1)) * $len;
         $copy = $this->copy($offset,$len);
