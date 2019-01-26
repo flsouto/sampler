@@ -26,7 +26,7 @@ class Sampler{
             $len = substr($input, 7);
             
             $this->file = __DIR__.'/tmp_dir/silence'.$id.'.wav';
-		    shell_exec("sox -n -r 44100 -c 2 $this->file trim 0 $len");
+		    shell_exec("sox -n -r 44100 -c 2 '$this->file' trim 0 $len");
 		    
         } else {
 
@@ -63,7 +63,7 @@ class Sampler{
 	}
 
 	function len(){
-		$len = `soxi -d {$this->file}`;
+		$len = `soxi -d '{$this->file}'`;
 		$parts = explode(":",$len);
 		$len = 0;
 		if(!empty($parts[0])){
@@ -120,14 +120,14 @@ class Sampler{
 
     function stereo(){
         $out = __DIR__.'/tmp_dir/stereo.wav';
-        shell_exec("sox -M -c 1 {$this->file} -c 1 {$this->file} $out");
+        shell_exec("sox -M -c 1 '{$this->file}' -c 1 '{$this->file}' '$out'");
         copy($out, $this->file);
         return $this;
     }
 
 	function mod($filters){
 		$out = __DIR__.'/tmp_dir/mod.wav';
-		shell_exec("sox {$this->file} $out $filters");
+		shell_exec("sox '{$this->file}' '$out' $filters");
 		copy($out, $this->file);
 		return $this;
 	}
@@ -143,7 +143,7 @@ class Sampler{
 	    $id = self::$sequence++;
 	    $out = __DIR__."/tmp_dir/cpy{$id}.wav";
         list($offset,$length) = $this->range($offset,$length);
-	    shell_exec("sox {$this->file} $out trim $offset $length");
+	    shell_exec("sox '{$this->file}' '$out' trim $offset $length");
 	    return new self($out, true);
     }
 
@@ -152,7 +152,7 @@ class Sampler{
 			$input = $input->file;
 		}
 		$out = __DIR__.'/tmp_dir/mod.wav';
-		shell_exec("sox {$this->file} $input $out");
+		shell_exec("sox '{$this->file}' '$input' '$out'");
 		copy($out, $this->file);
 		return $this;
 	}
@@ -163,9 +163,9 @@ class Sampler{
 		}
 		$out = __DIR__.'/tmp_dir/mod.wav';
 		if(!$normalize){
-			shell_exec("sox -m -v 1 {$this->file} -v 1 $input $out");			
+			shell_exec("sox -m -v 1 '{$this->file}' -v 1 '$input' '$out'");			
 		} else {
-			shell_exec("sox -m {$this->file} $input $out");
+			shell_exec("sox -m '{$this->file}' '$input' '$out'");
 		}
 		copy($out, $this->file);
 		return $this;
@@ -193,7 +193,7 @@ class Sampler{
 
             $offset = $i * $smp_size;
             $out = __DIR__.'/tmp_dir/fade.wav';
-            shell_exec("sox $this->file $out trim $offset $smp_size $attr $value");
+            shell_exec("sox '$this->file' '$out' trim $offset $smp_size $attr $value");
             if(is_null($stream)){
                 $stream = new self($out);
             } else {
@@ -202,7 +202,7 @@ class Sampler{
 
         }
 
-        shell_exec("mv {$stream->file} {$this->file}");
+        shell_exec("mv '{$stream->file}' '{$this->file}'");
 
         return $this;
         
@@ -234,7 +234,7 @@ class Sampler{
             }
         }
 
-        shell_exec("mv {$stream->file} {$this->file}");
+        shell_exec("mv '{$stream->file}' '{$this->file}'");
         return $this;
 
     }
@@ -260,7 +260,7 @@ class Sampler{
             }
             $offset += $smp_size;
         }
-        shell_exec("mv {$stream->file} {$this->file}");
+        shell_exec("mv '{$stream->file}' '{$this->file}'");
         return $this;
     }
     
@@ -293,7 +293,7 @@ class Sampler{
         if(substr($as,-4)=='.wav'){
             copy($this->file, $as);
         } else {
-            shell_exec("sox $this->file $as");
+            shell_exec("sox '$this->file' '$as'");
         }
 		return $this;
 	}
@@ -355,7 +355,7 @@ class Sampler{
     }
 
 	function play(){
-		shell_exec("play {$this->file}");
+		shell_exec("play '{$this->file}'");
 	}
 
 	function __destruct(){
