@@ -78,6 +78,13 @@ class Sampler{
 		return $len;
 
 	}
+	
+	function amp(){
+    	$amp = exec("sox '{$this->file}' -n stat 2>&1 | grep 'Maximum amp'");
+        $amp = explode(':',$amp);
+        $amp = trim($amp[1]);
+        return $amp;
+	}
 
 
     function getpos($expr){
