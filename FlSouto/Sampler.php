@@ -8,7 +8,7 @@ if(!is_dir(__DIR__.'/tmp_dir/')){
 
 class Sampler{
 
-	protected $file;
+	var $file;
 	protected $auto_gc = true;
 
 	protected static $sequence = 0;
