@@ -296,6 +296,32 @@ class Sampler{
         return $ref;
     }
     
+    function maxgain(){
+
+        $tmp = __DIR__."/tmp_dir/maxgain.wav";
+
+        for($i=1;$i<=100;$i++){
+
+            $o = null;
+                        
+            exec("sox '$this->file' '$tmp' gain $i 2>&1", $o);   
+            
+            if($o && strstr(implode($o), 'gain clipped')){
+                break;
+            }
+            
+        }
+        $i--;
+        
+        if($i>0){        
+            $this->mod('gain '.$i);
+        }
+        
+        return $i;
+
+    }
+
+    
 	function save($as){
         if(substr($as,-4)=='.wav'){
             copy($this->file, $as);
