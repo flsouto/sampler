@@ -6,6 +6,10 @@ if(!is_dir(__DIR__.'/tmp_dir/')){
     mkdir(__DIR__.'/tmp_dir/');
 }
 
+if(!is_dir(__DIR__.'/meta/')){
+    mkdir(__DIR__.'/meta/');
+}
+
 class Sampler{
 
 	var $file;
@@ -43,6 +47,10 @@ class Sampler{
 
 	}
 
+    function hash(){
+        return md5(file_get_contents($this->file));
+    }
+
 	static function silence($length){
 	    return new self("silence $length");
     }
@@ -61,6 +69,20 @@ class Sampler{
 	function __invoke(){
 		return new self($this);
 	}
+
+    function meta($key, $value='__GET__'){
+        $meta = [];
+        $hash = $this->hash();
+        if(file_exists($f=__DIR__."/meta/".$hash.".json")){
+            $meta = json_decode(file_get_contents($f),true);
+        }
+        if($value == '__GET__'){
+            return isset($meta[$value]) ? $meta[$value] : null;
+        }
+        $meta[$key] = $value;
+        file_put_contents($f, json_encode($meta, JSON_PRETTY_PRINT));
+        return $this;
+    }
 
 	function len(){
 		$len = `soxi -d '{$this->file}'`;
