@@ -85,7 +85,7 @@ class Sampler{
     }
 
 	function len(){
-		$len = `soxi -d '{$this->file}'`;
+		$len = trim(`soxi -d '{$this->file}'`);
 		$parts = explode(":",$len);
 		$len = 0;
 		if(!empty($parts[0])){
