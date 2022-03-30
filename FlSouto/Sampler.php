@@ -13,13 +13,11 @@ if(!is_dir(__DIR__.'/meta/')){
 class Sampler{
 
 	var $file;
-	protected $auto_gc = 60 * 30;
-
-	protected static $sequence = 0;
+	protected $auto_gc = 60 * 5;
 
 	function __construct($input, $reference=false){
 
-        $id = time() + self::$sequence++;
+        $id = uniqid();
 
         if($input instanceof self){
 			$input = $input->file;
@@ -148,14 +146,14 @@ class Sampler{
     }
 
     function stereo(){
-        $out = __DIR__.'/tmp_dir/stereo.wav';
+        $out = __DIR__.'/tmp_dir/stereo'.uniqid().'.wav';
         shell_exec("sox -M -c 1 '{$this->file}' -c 1 '{$this->file}' '$out'");
         copy($out, $this->file);
         return $this;
     }
 
 	function mod($filters){
-		$out = __DIR__.'/tmp_dir/mod.wav';
+		$out = __DIR__.'/tmp_dir/mod'.uniqid().'.wav';
 		shell_exec("sox '{$this->file}' '$out' $filters");
 		copy($out, $this->file);
 		return $this;
@@ -169,7 +167,7 @@ class Sampler{
 	}
 
 	function copy($offset, $length=null){
-	    $id = self::$sequence++;
+	    $id = uniqid();
 	    $out = __DIR__."/tmp_dir/cpy{$id}.wav";
         list($offset,$length) = $this->range($offset,$length);
 	    shell_exec("sox '{$this->file}' '$out' trim $offset $length");
@@ -180,7 +178,7 @@ class Sampler{
 		if($input instanceof self){
 			$input = $input->file;
 		}
-		$out = __DIR__.'/tmp_dir/mod.wav';
+		$out = __DIR__.'/tmp_dir/mod'.uniqid().'.wav';
 		shell_exec("sox '{$this->file}' '$input' '$out'");
 		copy($out, $this->file);
 		return $this;
@@ -190,7 +188,7 @@ class Sampler{
 		if($input instanceof self){
 			$input = $input->file;
 		}
-		$out = __DIR__.'/tmp_dir/mod.wav';
+		$out = __DIR__.'/tmp_dir/mod'.uniqid().'.wav';
 		if(!$normalize){
 			shell_exec("sox -m -v 1 '{$this->file}' -v 1 '$input' '$out'");			
 		} else {
@@ -221,7 +219,7 @@ class Sampler{
         foreach($steps as $i => $value){
 
             $offset = $i * $smp_size;
-            $out = __DIR__.'/tmp_dir/fade.wav';
+            $out = __DIR__.'/tmp_dir/fade'.uniqid().'.wav';
             shell_exec("sox '$this->file' '$out' trim $offset $smp_size $attr $value");
             if(is_null($stream)){
                 $stream = new self($out);
@@ -320,7 +318,7 @@ class Sampler{
     
     function maxgain(){
 
-        $tmp = __DIR__."/tmp_dir/maxgain.wav";
+        $tmp = __DIR__."/tmp_dir/maxgain".uniqid().".wav";
 
         for($i=1;$i<=100;$i++){
 
