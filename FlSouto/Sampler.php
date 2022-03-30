@@ -13,13 +13,13 @@ if(!is_dir(__DIR__.'/meta/')){
 class Sampler{
 
 	var $file;
-	protected $auto_gc = true;
+	protected $auto_gc = 60 * 30;
 
 	protected static $sequence = 0;
 
 	function __construct($input, $reference=false){
 
-        $id = self::$sequence++;
+        $id = time() + self::$sequence++;
 
         if($input instanceof self){
 			$input = $input->file;
@@ -423,8 +423,14 @@ class Sampler{
 	}
 
 	function __destruct(){
-		if($this->auto_gc && file_exists($this->file)){
-			//unlink($this->file);
+	    static $auto_gc_done = false;
+		if(!$auto_gc_done && $this->auto_gc){
+            foreach(glob(__DIR__."/tmp_dir/*.wav") as $f){
+                if(time()-filemtime($f) >= $this->auto_gc){
+                    unlink($f);
+                }
+            }
+            $auto_gc_done = true;
 		}
 	}
 
