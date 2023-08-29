@@ -1,0 +1,19 @@
+#!/bin/php
+<?php
+use FlSouto\Sampler;
+require_once(__DIR__."/vendor/autoload.php");
+$file = $argv[1]??'';
+if(!$file){
+    die("No file provided \n");
+}
+
+parse_str(implode('&',array_slice($argv,2)), $params);
+$s = new Sampler($file);
+
+foreach($params as $k => $v){
+    $r = $s->$k(...explode(',',$v));
+    if($r instanceof Sampler){
+        $s = $r;
+    }
+}
+

@@ -14,5 +14,10 @@
         "psr-0" : {
           "FlSouto\\" : "."
         }
+    },
+    "scripts" : {
+        "post-install-cmd" : [
+            "./install-cli"
+        ]
     }
 }

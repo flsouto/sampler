@@ -1,0 +1,2 @@
+a='alias smp="'$PWD/cli' "'
+echo $a >> ~/.bashrc

@@ -359,9 +359,15 @@ class Sampler{
 	}
 
 	function resize($newlen){
+	    if(preg_match("/\.(wav|mp3)$/",$newlen)){
+            $newlen = new self($newlen);
+	    }
+	    if($newlen instanceof self){
+            $newlen = $newlen->len();
+	    }
 	    return $this->mod('speed '.($this->len()/$newlen));
     }
-    
+
     function to120(){
 
         $len = $this->len();
@@ -419,6 +425,11 @@ class Sampler{
 	function play(){
 		shell_exec("play '{$this->file}'");
 	}
+
+    function __call($method,$args){
+        $args = $args ? implode(' ', $args) : '';
+        return $this->mod("$method ".$args);
+    }
 
 	function __destruct(){
 	    static $auto_gc_done = false;
