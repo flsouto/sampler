@@ -430,7 +430,9 @@ class Sampler{
         $args = $args ? implode(' ', $args) : '';
         return $this->mod("$method ".$args);
     }
-
+    function test(){
+        echo 'teste';
+    }
 	function __destruct(){
 	    static $auto_gc_done = false;
 		if(!$auto_gc_done && $this->auto_gc){
