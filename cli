@@ -8,9 +8,13 @@ if(!$file){
 }
 
 parse_str(implode('&',array_slice($argv,2)), $params);
+
 $s = new Sampler($file);
 
 foreach($params as $k => $v){
+
+    if($k=='save' && empty($v)) $v = $file;
+    
     $r = $s->$k(...explode(',',$v));
     if($r instanceof Sampler){
         $s = $r;
