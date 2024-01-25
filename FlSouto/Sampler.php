@@ -207,9 +207,15 @@ class Sampler{
 	    $trim = $this->len() / $num_slices;
 	    return $this->mod("trim 0 $trim repeat $repeat");
     }
-    
+
     function fade($from_val, $to_val, $attr='gain'){
-        
+
+        if($attr === 'gain'){
+            $out = __DIR__.'/tmp_dir/fade'.uniqid().'.wav';
+            $script = __DIR__."/fade.py";
+            shell_exec($cmd = "python3 $script $this->file $from_val $to_val $out");
+        }
+
         $steps = range($from_val, $to_val);
         $smp_size = $this->len() / count($steps);
 
