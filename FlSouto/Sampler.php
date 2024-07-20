@@ -352,7 +352,7 @@ class Sampler{
         if(substr($as,-4)=='.wav'){
             copy($this->file, $as);
         } else {
-            shell_exec("sox '$this->file' '$as'");
+            shell_exec("sox '$this->file' -c 320 '$as'");
         }
 		return $this;
 	}
