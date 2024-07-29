@@ -214,6 +214,8 @@ class Sampler{
             $out = __DIR__.'/tmp_dir/fade'.uniqid().'.wav';
             $script = __DIR__."/fade.py";
             shell_exec($cmd = "python3 $script $this->file $from_val $to_val $out");
+            $this->file = $out;
+            return $this;
         }
 
         $steps = range($from_val, $to_val);
