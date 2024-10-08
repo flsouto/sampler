@@ -24,12 +24,9 @@ class Sampler{
 		}
 
 		if(substr($input, 0, 7)=='silence'){
-            
             $len = substr($input, 7);
-            
             $this->file = __DIR__.'/tmp_dir/silence'.$id.'.wav';
 		    shell_exec("sox -n -r 44100 -c 2 '$this->file' trim 0 $len");
-		    
         } else {
 
 		    if($reference){
@@ -49,8 +46,23 @@ class Sampler{
         return md5(file_get_contents($this->file));
     }
 
-	static function silence($length){
+	static function silence($length=0){
 	    return new self("silence $length");
+    }
+
+    static function join(array $samples){
+        $files = [];
+        foreach($samples as $s){
+            if($s instanceof self){
+                $files[] = $s->file;
+            } else {
+                $files[] = $s;
+            }
+        }
+        $id = uniqid();
+        $newf = "/tmp/$id.wav";
+        exec("sox ".implode(' ',$files)." $newf");
+        return new self($newf, true);
     }
 
     static function select($path, $reference=false){
@@ -410,11 +422,11 @@ class Sampler{
 
         return $this;
     }
-    
-    function tempo(){
+
+    function bpm(){
         return 120 * (16/$this->len());
     }
-    
+
     function toTempo($bpm){
         $this->resize((16 * 120) / $bpm);
         return $this;
